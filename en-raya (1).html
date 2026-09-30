@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>En raya: 3, 4 y 5 en raya</title>
+<style>
+:root{--bg:#e8f0f6;--fg:#17202a;--card:#fff;--mut:#586878;--ac:#2f6fed;--x:#e5484d;--o:#2f7cf6;--ln:#c5d3e0}
+[data-theme=dark]{--bg:#0e121b;--fg:#e8edf3;--card:#1a2130;--mut:#9aa9b8;--ac:#7aa6ff;--ln:#2b3549;--x:#ff6b70;--o:#5aa2ff}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.4 "Avenir Next","Segoe UI",system-ui,sans-serif;min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px}
+h1{margin:0;font-size:1.6rem;font-weight:800}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.ib{width:46px;height:46px;border-radius:50%;border:1px solid var(--ln);background:var(--card);font-size:1.3rem;margin-left:8px}
+main{max-width:640px;margin:0 auto;padding:0 16px 24px}
+.grp{margin:0 0 18px}.grp h2{font-size:.95rem;margin:0 0 8px;color:var(--mut);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{flex:1 1 30%;min-height:52px;padding:6px 10px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-weight:600}
+.seg button small{display:block;font-weight:400;color:var(--mut)}
+.seg button[aria-pressed=true]{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}
+.seg .x{color:var(--x);font-size:1.4rem}.seg .o{color:var(--o);font-size:1.4rem}
+.go{width:100%;min-height:56px;border:0;border-radius:14px;background:var(--ac);color:#fff;font-weight:800;font-size:1.15rem}
+[data-theme=dark] .go{color:#0b1020}
+#score{display:flex;gap:8px}
+#score div{flex:1;background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:6px 8px;text-align:center;font-size:.85rem}
+#score b{display:block;font-size:1.3rem}
+#score svg{width:16px;height:16px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:14;stroke-linecap:round}
+#st{text-align:center;font-weight:700;font-size:1.15rem;margin:10px 0 12px;min-height:1.6em}
+#b{width:min(100%,620px,max(260px,calc(100dvh - 330px)));margin:0 auto;display:grid;aspect-ratio:1}
+.c{aspect-ratio:1;padding:0;display:grid;place-items:center;border:0;background:none;min-width:0}
+.c svg{width:72%;height:72%;fill:none;stroke:currentColor;stroke-width:12;stroke-linecap:round;stroke-dasharray:100;animation:dr .3s ease-out}
+@keyframes dr{from{stroke-dashoffset:100}}
+.x{color:var(--x)}.o{color:var(--o)}
+.c:focus-visible{outline:3px solid var(--ac);outline-offset:-3px}
+[data-t=neon]{background:#080a18;padding:6px;border-radius:14px;gap:4px;box-shadow:0 0 24px #7c3cff66}
+[data-t=neon] .c{background:#12162e;border-radius:8px;box-shadow:inset 0 0 0 1px #22d3ee44}
+[data-t=neon] .x{color:#ff4df0}[data-t=neon] .o{color:#22f0ff}
+[data-t=neon] svg{filter:drop-shadow(0 0 5px currentColor)}
+[data-t=chess]{border-radius:8px;overflow:hidden;box-shadow:0 4px 14px #0004}
+[data-t=chess] .c{background:#eeeed2}[data-t=chess] .c.d{background:#769656}
+[data-t=chess] .x{color:#8a1c1c}[data-t=chess] .o{color:#12307a}
+[data-t=paper]{background:#fbfbf4;border:2px solid #7ea6d6;border-radius:4px}
+[data-t=paper] .c{box-shadow:inset 0 0 0 .5px #7ea6d6}
+[data-t=paper] .x{color:#c62828}[data-t=paper] .o{color:#1a47b8}
+[data-t=wood]{background:linear-gradient(135deg,#8a5a2b,#6b4220);padding:8px;gap:3px;border-radius:12px}
+[data-t=wood] .c{background:#d9a566;border-radius:5px;box-shadow:inset 0 0 0 1px #5c3a1855}
+[data-t=wood] .x{color:#4a1d0b}[data-t=wood] .o{color:#fff4dc}
+[data-t=wood] svg{filter:drop-shadow(0 1px 1px #0008)}
+#b .c.last{box-shadow:inset 0 0 0 3px color-mix(in srgb,currentColor 55%,transparent)}
+#b .c.win{box-shadow:inset 0 0 0 3px #ffc933,0 0 14px #ffc933}
+.row{display:flex;gap:10px;margin-top:16px}
+.row button{flex:1;min-height:52px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-weight:700}
+@media(prefers-reduced-motion:reduce){.c svg{animation:none}}
+</style></head><body>
+<header><h1>En raya</h1><div><button class="ib" id="snd" aria-label="Activar o desactivar el sonido"></button><button class="ib" id="thm" aria-label="Cambiar entre modo claro y oscuro"></button></div></header>
+<main>
+<section id="menu"><div id="opts"></div><button class="go" id="go">Jugar</button></section>
+<section id="game" hidden><div id="score"></div><p id="st" role="status" aria-live="polite"></p><div id="b"></div>
+<div class="row"><button id="again">Nueva partida</button><button id="back">Cambiar modo</button></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),D=[[0,1],[1,0],[1,1],[1,-1]],CF={3:[3,3],4:[6,4],5:[9,5]},
+S={mode:3,opp:'d',me:'X',board:'neon',sound:true,dark:matchMedia('(prefers-color-scheme:dark)').matches};
+try{Object.assign(S,JSON.parse(localStorage.getItem('enraya')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('enraya',JSON.stringify(S))}catch(e){}};
+
+/* Sonidos (Web Audio, sin archivos) */
+let ac;
+function tone(f,d=.12,ty='sine',v=.15,t0=0){if(!S.sound)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+t0,o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d)}catch(e){}}
+const snd={x:()=>tone(520,.1,'triangle'),o:()=>tone(390,.12,'sine'),ui:()=>tone(700,.05,'sine',.08),
+win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',.18,i*.12)),
+lose:()=>[392,330,262].forEach((f,i)=>tone(f,.3,'sawtooth',.08,i*.15)),
+draw:()=>{tone(330,.2,'square',.07);tone(330,.2,'square',.07,.22)}};
+
+/* Menú */
+const OPT=[['mode','Modo',[[3,'3 en raya','3×3'],[4,'4 en raya','6×6'],[5,'5 en raya','9×9']]],
+['opp','Rival',[['h','2 jugadores'],['e','IA fácil'],['d','IA difícil']]],
+['me','Ficha del jugador 1',[['X','X'],['O','O']]],
+['board','Tablero',[['neon','Neón'],['chess','Ajedrez'],['paper','Libreta'],['wood','Madera']]]];
+function menu(){$('#opts').innerHTML=OPT.map(([k,t,os])=>`<div class="grp"><h2>${t}</h2><div class="seg">${os.map(([v,l,s])=>`<button data-k="${k}" data-v="${v}" aria-pressed="${S[k]==v}"${k=='me'?` class="${v.toLowerCase()}"`:''}>${l}${s?`<small>${s}</small>`:''}</button>`).join('')}</div></div>`).join('')}
+const apply=()=>{document.documentElement.dataset.theme=S.dark?'dark':'light';$('#thm').textContent=S.dark?'☀️':'🌙';$('#snd').textContent=S.sound?'🔊':'🔇'};
+$('#opts').onclick=e=>{const b=e.target.closest('button');if(!b)return;S[b.dataset.k]=b.dataset.k=='mode'?+b.dataset.v:b.dataset.v;save();menu();snd.ui()};
+$('#snd').onclick=()=>{S.sound=!S.sound;save();apply();snd.ui()};
+$('#thm').onclick=()=>{S.dark=!S.dark;save();apply();snd.ui()};
+
+/* Reglas */
+const opp=p=>p=='X'?'O':'X',pick=a=>a[Math.random()*a.length|0];
+function line(c,n,k,i,p){const r=i/n|0,q=i%n;
+for(const[dr,dc]of D){const L=[i];
+for(const s of[1,-1]){let a=r+dr*s,b=q+dc*s;while(a>=0&&a<n&&b>=0&&b<n&&c[a*n+b]===p){L.push(a*n+b);a+=dr*s;b+=dc*s}}
+if(L.length>=k)return L}return null}
+
+/* IA */
+function mm(c,t,me,n,k,d){let best=t==me?-99:99,any=0;
+for(let i=0;i<c.length;i++)if(!c[i]){any=1;c[i]=t;
+const s=line(c,n,k,i,t)?(t==me?10-d:d-10):mm(c,opp(t),me,n,k,d+1);c[i]='';
+best=t==me?Math.max(best,s):Math.min(best,s)}
+return any?best:0}
+function heur(c,n,k,i,me){const op=opp(me),r=i/n|0,q=i%n;let at=0,df=0;
+for(const[dr,dc]of D)for(let s=0;s<k;s++){
+const r0=r-dr*s,c0=q-dc*s,r1=r0+dr*(k-1),c1=c0+dc*(k-1);
+if(r0<0||r0>=n||r1<0||r1>=n||c0<0||c0>=n||c1<0||c1>=n)continue;
+let a=0,b=0;for(let t=0;t<k;t++){const v=c[(r0+dr*t)*n+c0+dc*t];if(v===me)a++;else if(v===op)b++}
+if(!b)at+=10**a;if(!a)df+=10**b}
+return[at,df]}
+/* Casillas vacías que darían la victoria a p en ventanas que pasan por i (con c[i]=p ya puesto) */
+function wcells(c,n,k,i,p,dirs=D){const r=i/n|0,q=i%n,W=new Set();
+for(const[dr,dc]of dirs)for(let s=0;s<k;s++){
+const r0=r-dr*s,c0=q-dc*s,r1=r0+dr*(k-1),c1=c0+dc*(k-1);
+if(r0<0||r0>=n||r1<0||r1>=n||c0<0||c0>=n||c1<0||c1>=n)continue;
+let a=0,e=-1,bad=0;for(let t=0;t<k;t++){const j=(r0+dr*t)*n+c0+dc*t,v=c[j];if(v===p)a++;else if(v)bad=1;else e=j}
+if(!bad&&a==k-1)W.add(e)}return W}
+/* Valor táctico de que p juegue en i: W = casillas ganadoras creadas (≥2 = imparable),
+   T = direcciones con "tres abierto" (una jugada más crea amenaza doble) */
+function tval(c,n,k,i,p){c[i]=p;const r=i/n|0,q=i%n,W=wcells(c,n,k,i,p).size;let T=0;
+if(W<2)for(const d of D){const[dr,dc]=d;let f=0;
+for(let s=1-k;s<k&&!f;s++){if(!s)continue;const a=r+dr*s,b=q+dc*s;if(a<0||a>=n||b<0||b>=n)continue;
+const j=a*n+b;if(c[j])continue;c[j]=p;if(wcells(c,n,k,j,p,[d]).size>=2)f=1;c[j]=''}
+T+=f}
+c[i]='';
+return W>=2?1e9:W&&T?1e8:T>=2?1e7:T?1e6:W?1e5:0}
+function aiPick(){const c=G.c,{n,k}=G,me=aiP,op=opp(me),E=[];c.forEach((v,i)=>v||E.push(i));
+const hard=S.opp=='d';
+if(hard&&n==3){let b=-99,B=[];
+for(const i of E){c[i]=me;const s=line(c,n,k,i,me)?10:mm(c,op,me,n,k,1);c[i]='';if(s>b){b=s;B=[i]}else if(s==b)B.push(i)}
+return pick(B)}
+const tryP=p=>E.find(i=>{c[i]=p;const w=line(c,n,k,i,p);c[i]='';return w});
+if(hard||Math.random()<.4){let i=tryP(me);if(i===undefined)i=tryP(op);if(i!==undefined)return i}
+if(!hard)return pick(E);
+let B=-1,m=E[0];
+for(const i of E){const[a,d]=heur(c,n,k,i,me),s=tval(c,n,k,i,me)+tval(c,n,k,i,op)*.9+a+d*.9+Math.random()*.5;if(s>B){B=s;m=i}}
+return m}
+
+/* Partida */
+let G,aiP;
+const isAI=p=>S.opp!='h'&&p==aiP;
+const nm=p=>S.opp=='h'?(p==S.me?'Jugador 1':'Jugador 2'):(p==S.me?'Tú':'IA');
+const ico=p=>`<svg viewBox="0 0 100 100" class="${p.toLowerCase()}">${p=='X'?'<path pathLength="100" d="M22 22L78 78M78 22L22 78"/>':'<circle pathLength="100" cx="50" cy="50" r="28"/>'}</svg>`;
+function info(w){const s=G.sc;
+$('#score').innerHTML=`<div>${ico('X')} ${nm('X')}<b>${s.X}</b></div><div>Empates<b>${s.D}</b></div><div>${ico('O')} ${nm('O')}<b>${s.O}</b></div>`;
+$('#st').textContent=G.over?(w?(S.opp=='h'?`¡Gana ${nm(w)}!`:w==S.me?'¡Has ganado!':'La IA ha ganado'):'¡Empate!'):isAI(G.t)?'La IA está pensando…':S.opp=='h'?`Turno de ${nm(G.t)} (${G.t})`:'Tu turno'}
+function start(){G={n:CF[S.mode][0],k:CF[S.mode][1],sc:{X:0,O:0,D:0},r:0};aiP=opp(S.me);$('#menu').hidden=true;$('#game').hidden=false;round()}
+function round(){const n=G.n,b=$('#b');G.r++;G.c=Array(n*n).fill('');G.t=G.r%2?S.me:opp(S.me);G.over=false;
+b.dataset.t=S.board;b.style.gridTemplateColumns=`repeat(${n},1fr)`;
+b.innerHTML=G.c.map((_,i)=>`<button class="c${((i/n|0)+i%n)&1?' d':''}" data-i="${i}" aria-label="Fila ${(i/n|0)+1}, columna ${i%n+1}"></button>`).join('');
+info();next()}
+function next(){if(G.over||!isAI(G.t))return;const g=G,r=G.r;setTimeout(()=>{if(g===G&&r===G.r&&!G.over)play(aiPick())},450)}
+function play(i){if(G.over||G.c[i])return;const p=G.t,el=$('#b').children[i];G.c[i]=p;
+$('#b .last')?.classList.remove('last');el.classList.add(p.toLowerCase(),'last');el.innerHTML=ico(p);el.setAttribute('aria-label',el.getAttribute('aria-label')+': '+p);
+const w=line(G.c,G.n,G.k,i,p);
+if(w){G.over=1;G.sc[p]++;w.forEach(j=>$('#b').children[j].classList.add('win'));info(p);(S.opp=='h'||p==S.me?snd.win:snd.lose)()}
+else if(G.c.every(Boolean)){G.over=1;G.sc.D++;info();snd.draw()}
+else{snd[p.toLowerCase()]();G.t=opp(p);info();next()}}
+$('#b').onclick=e=>{const c=e.target.closest('.c');if(c&&!isAI(G.t))play(+c.dataset.i)};
+$('#go').onclick=()=>{snd.ui();start()};
+$('#again').onclick=()=>{snd.ui();round()};
+$('#back').onclick=()=>{G.r++;snd.ui();$('#game').hidden=true;$('#menu').hidden=false};
+apply();menu();
+</script></body></html>
