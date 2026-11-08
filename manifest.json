@@ -1,0 +1,30 @@
+{
+  "name": "En raya: 3, 4 y 5 en raya",
+  "short_name": "En raya",
+  "description": "3, 4 y 5 en raya contra la IA, en el mismo dispositivo o en red.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#e8f0f6",
+  "theme_color": "#e8f0f6",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

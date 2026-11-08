@@ -2,6 +2,12 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>En raya: 3, 4 y 5 en raya</title>
+<meta name="theme-color" content="#e8f0f6">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="En raya">
 <style>
 :root{--bg:#e8f0f6;--fg:#17202a;--card:#fff;--mut:#586878;--ac:#2f6fed;--x:#e5484d;--o:#2f7cf6;--ln:#c5d3e0}
 [data-theme=dark]{--bg:#0e121b;--fg:#e8edf3;--card:#1a2130;--mut:#9aa9b8;--ac:#7aa6ff;--ln:#2b3549;--x:#ff6b70;--o:#5aa2ff}
@@ -51,11 +57,23 @@ main{max-width:640px;margin:0 auto;padding:0 16px 24px}
 #b .c.win{box-shadow:inset 0 0 0 3px #ffc933,0 0 14px #ffc933}
 .row{display:flex;gap:10px;margin-top:16px}
 .row button{flex:1;min-height:52px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-weight:700}
+#net{text-align:center}#net h2{margin:4px 0 14px}
+#net p{color:var(--mut);margin:14px 0 8px}
+#code{flex:1;min-height:52px;border-radius:12px;border:2px solid var(--ln);background:var(--card);color:var(--fg);font:800 1.3rem/1 inherit;text-align:center;letter-spacing:.15em;text-transform:uppercase;min-width:0}
+#nbig{font-size:clamp(3rem,16vw,4.5rem);font-weight:800;letter-spacing:.12em;color:var(--ac);margin:14px 0 4px;min-height:0}
+#nst{min-height:1.4em;font-weight:600;overflow-wrap:anywhere}
+.row input+button{flex:0 0 auto;padding:0 18px}
 @media(prefers-reduced-motion:reduce){.c svg{animation:none}}
 </style></head><body>
 <header><h1>En raya</h1><div><button class="ib" id="snd" aria-label="Activar o desactivar el sonido"></button><button class="ib" id="thm" aria-label="Cambiar entre modo claro y oscuro"></button></div></header>
 <main>
 <section id="menu"><div id="opts"></div><button class="go" id="go">Jugar</button></section>
+<section id="net" hidden><h2>Partida en red</h2>
+<button class="go" id="mk">Crear partida</button>
+<p>o únete con el código de tu rival:</p>
+<div class="row" style="margin-top:0"><input id="code" maxlength="4" placeholder="K7P2" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código de la partida"><button id="join">Unirse</button></div>
+<div id="nbig"></div><p id="nst" role="status" aria-live="polite"></p>
+<div class="row"><button id="nback">Volver</button></div></section>
 <section id="game" hidden><div id="score"></div><p id="st" role="status" aria-live="polite"></p><div id="b"></div>
 <div class="row"><button id="again">Nueva partida</button><button id="back">Cambiar modo</button></div></section>
 </main>
@@ -75,8 +93,8 @@ draw:()=>{tone(330,.2,'square',.07);tone(330,.2,'square',.07,.22)}};
 
 /* Menú */
 const OPT=[['mode','Modo',[[3,'3 en raya','3×3'],[4,'4 en raya','6×6'],[5,'5 en raya','9×9']]],
-['opp','Rival',[['h','2 jugadores'],['e','IA fácil'],['d','IA difícil']]],
-['me','Ficha del jugador 1',[['X','X'],['O','O']]],
+['opp','Rival',[['h','2 jugadores','mismo dispositivo'],['n','En red','2 dispositivos'],['e','IA fácil'],['d','IA difícil']]],
+['me','Tu ficha (jugador 1)',[['X','X'],['O','O']]],
 ['board','Tablero',[['neon','Neón'],['chess','Ajedrez'],['paper','Libreta'],['wood','Madera']]]];
 function menu(){$('#opts').innerHTML=OPT.map(([k,t,os])=>`<div class="grp"><h2>${t}</h2><div class="seg">${os.map(([v,l,s])=>`<button data-k="${k}" data-v="${v}" aria-pressed="${S[k]==v}"${k=='me'?` class="${v.toLowerCase()}"`:''}>${l}${s?`<small>${s}</small>`:''}</button>`).join('')}</div></div>`).join('')}
 const apply=()=>{document.documentElement.dataset.theme=S.dark?'dark':'light';$('#thm').textContent=S.dark?'☀️':'🌙';$('#snd').textContent=S.sound?'🔊':'🔇'};
@@ -134,14 +152,14 @@ return m}
 
 /* Partida */
 let G,aiP;
-const isAI=p=>S.opp!='h'&&p==aiP;
-const nm=p=>S.opp=='h'?(p==S.me?'Jugador 1':'Jugador 2'):(p==S.me?'Tú':'IA');
+const isAI=p=>!NET&&S.opp!='h'&&S.opp!='n'&&p==aiP;
+const nm=p=>NET?(p==NET.me?'Tú':'Rival'):S.opp=='h'?(p==S.me?'Jugador 1':'Jugador 2'):(p==S.me?'Tú':'IA');
 const ico=p=>`<svg viewBox="0 0 100 100" class="${p.toLowerCase()}">${p=='X'?'<path pathLength="100" d="M22 22L78 78M78 22L22 78"/>':'<circle pathLength="100" cx="50" cy="50" r="28"/>'}</svg>`;
 function info(w){const s=G.sc;
 $('#score').innerHTML=`<div>${ico('X')} ${nm('X')}<b>${s.X}</b></div><div>Empates<b>${s.D}</b></div><div>${ico('O')} ${nm('O')}<b>${s.O}</b></div>`;
-$('#st').textContent=G.over?(w?(S.opp=='h'?`¡Gana ${nm(w)}!`:w==S.me?'¡Has ganado!':'La IA ha ganado'):'¡Empate!'):isAI(G.t)?'La IA está pensando…':S.opp=='h'?`Turno de ${nm(G.t)} (${G.t})`:'Tu turno'}
-function start(){G={n:CF[S.mode][0],k:CF[S.mode][1],sc:{X:0,O:0,D:0},r:0};aiP=opp(S.me);$('#menu').hidden=true;$('#game').hidden=false;round()}
-function round(){const n=G.n,b=$('#b');G.r++;G.c=Array(n*n).fill('');G.t=G.r%2?S.me:opp(S.me);G.over=false;
+$('#st').textContent=NET&&!NET.on&&!G.over?'Tu rival se ha desconectado':G.over?(w?(NET?(w==NET.me?'¡Has ganado!':'Ha ganado tu rival'):S.opp=='h'?`¡Gana ${nm(w)}!`:w==S.me?'¡Has ganado!':'La IA ha ganado'):'¡Empate!'):isAI(G.t)?'La IA está pensando…':NET?(G.t==NET.me?`Tu turno (${G.t})`:'Turno del rival…'):S.opp=='h'?`Turno de ${nm(G.t)} (${G.t})`:'Tu turno'}
+function start(md=S.mode){G={n:CF[md][0],k:CF[md][1],sc:{X:0,O:0,D:0},r:0};aiP=opp(S.me);$('#menu').hidden=$('#net').hidden=true;$('#game').hidden=false;round()}
+function round(){const n=G.n,b=$('#b');G.r++;G.c=Array(n*n).fill('');G.t=G.r%2?(NET?NET.p1:S.me):opp(NET?NET.p1:S.me);G.over=false;
 b.dataset.t=S.board;b.style.gridTemplateColumns=`repeat(${n},1fr)`;
 b.innerHTML=G.c.map((_,i)=>`<button class="c${((i/n|0)+i%n)&1?' d':''}" data-i="${i}" aria-label="Fila ${(i/n|0)+1}, columna ${i%n+1}"></button>`).join('');
 info();next()}
@@ -149,12 +167,64 @@ function next(){if(G.over||!isAI(G.t))return;const g=G,r=G.r;setTimeout(()=>{if(
 function play(i){if(G.over||G.c[i])return;const p=G.t,el=$('#b').children[i];G.c[i]=p;
 $('#b .last')?.classList.remove('last');el.classList.add(p.toLowerCase(),'last');el.innerHTML=ico(p);el.setAttribute('aria-label',el.getAttribute('aria-label')+': '+p);
 const w=line(G.c,G.n,G.k,i,p);
-if(w){G.over=1;G.sc[p]++;w.forEach(j=>$('#b').children[j].classList.add('win'));info(p);(S.opp=='h'||p==S.me?snd.win:snd.lose)()}
+if(w){G.over=1;G.sc[p]++;w.forEach(j=>$('#b').children[j].classList.add('win'));info(p);(NET?p==NET.me:S.opp=='h'||p==S.me)?snd.win():snd.lose()}
 else if(G.c.every(Boolean)){G.over=1;G.sc.D++;info();snd.draw()}
 else{snd[p.toLowerCase()]();G.t=opp(p);info();next()}}
-$('#b').onclick=e=>{const c=e.target.closest('.c');if(c&&!isAI(G.t))play(+c.dataset.i)};
-$('#go').onclick=()=>{snd.ui();start()};
-$('#again').onclick=()=>{snd.ui();round()};
-$('#back').onclick=()=>{G.r++;snd.ui();$('#game').hidden=true;$('#menu').hidden=false};
+$('#b').onclick=e=>{const c=e.target.closest('.c');if(!c||isAI(G.t))return;
+  if(NET){if(!NET.on||G.t!=NET.me||G.over||G.c[+c.dataset.i])return;nsend({t:'mv',i:+c.dataset.i,r:G.r})}
+  play(+c.dataset.i)};
+$('#go').onclick=()=>{snd.ui();if(S.opp=='n'){$('#menu').hidden=true;$('#net').hidden=false;nreset()}else start()};
+$('#again').onclick=()=>{snd.ui();if(NET){if(!G.over&&NET.on)return;nsend({t:'again',r:G.r+1})}round()};
+$('#back').onclick=()=>{G.r++;snd.ui();nleave();$('#game').hidden=true;$('#menu').hidden=false};
+
+/* ===== Partida en red (PeerJS): cada jugador en su dispositivo ===== */
+let NET=null;
+const AB='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',PJ='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
+const loadPJ=()=>window.Peer?Promise.resolve():new Promise((ok,ko)=>{const e=document.createElement('script');e.src=PJ;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
+const nst=t=>{$('#nst').textContent=t};
+const nsend=o=>{try{if(NET&&NET.c&&NET.on)NET.c.send(o)}catch(e){}};
+function nreset(){nleave();$('#nbig').textContent='';nst('');$('#mk').disabled=$('#join').disabled=false;$('#code').value=''}
+function nleave(){if(!NET)return;nsend({t:'bye'});try{NET.c&&NET.c.close();NET.peer&&NET.peer.destroy()}catch(e){}clearTimeout(NET.to);NET=null}
+function nwire(c){
+  NET.c=c;
+  c.on('data',d=>{if(!NET||!d)return;
+    if(d.t=='cfg'){NET.on=true;NET.p1=d.p1;NET.me=opp(d.p1);clearTimeout(NET.to);start(d.mode)}
+    else if(d.t=='mv'&&d.r==G.r&&G.t!=NET.me)play(d.i);
+    else if(d.t=='again'&&d.r>G.r)round();
+    else if(d.t=='bye'){NET.on=false;info()}});
+  c.on('close',()=>{if(NET&&NET.c===c){NET.on=false;if(!$('#game').hidden)info();else nst('Se perdió la conexión.')}});
+}
+async function ncreate(){
+  nleave();$('#mk').disabled=$('#join').disabled=true;
+  const code=[0,0,0,0].map(()=>AB[Math.random()*32|0]).join('');
+  NET={host:1,code,p1:S.me,me:S.me,on:false};const me=NET;
+  $('#nbig').textContent=code;nst('Conectando…');
+  try{await loadPJ();if(NET!==me)return;
+    NET.peer=new Peer('enraya-'+code);
+    NET.peer.on('open',()=>{if(NET===me)nst('Tu rival: elige «En red» → escribe '+code+' → «Unirse». Esperando…'+(location.protocol.startsWith('http')?' Enlace: '+location.href.split('#')[0]+'#'+code:''))});
+    NET.peer.on('connection',c=>{if(NET!==me||NET.c){c.on('open',()=>c.close());return}
+      nwire(c);c.on('open',()=>{NET.on=true;c.send({t:'cfg',mode:S.mode,p1:S.me});start(S.mode)})});
+    NET.peer.on('error',e=>{if(NET===me&&!NET.on){nst(e.type=='unavailable-id'?'Ese código está ocupado: pulsa otra vez «Crear partida».':'No hay conexión a internet. La partida en red necesita internet.');$('#mk').disabled=$('#join').disabled=false;$('#nbig').textContent=''}});
+  }catch(e){nst('No hay conexión a internet. La partida en red necesita internet.');$('#mk').disabled=$('#join').disabled=false}
+}
+async function njoin(v){
+  const code=(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length!=4||[...code].some(x=>AB.indexOf(x)<0)){nst('El código son 4 letras o números, por ejemplo K7P2.');return}
+  nleave();$('#mk').disabled=$('#join').disabled=true;nst('Buscando la partida '+code+'…');
+  NET={host:0,code,on:false};const me=NET;
+  const fail=t=>{if(NET!==me||NET.on)return;nst(t);$('#mk').disabled=$('#join').disabled=false;nleave()};
+  NET.to=setTimeout(()=>fail('No encuentro esa partida: revisa el código y que tu rival la tenga abierta.'),12000);
+  try{await loadPJ();if(NET!==me)return;
+    NET.peer=new Peer();
+    NET.peer.on('open',()=>{if(NET!==me)return;const c=NET.peer.connect('enraya-'+code,{reliable:true});nwire(c);c.on('open',()=>{if(NET===me)nst('¡Conectado! Empezando…')})});
+    NET.peer.on('error',e=>fail(e.type=='peer-unavailable'?'No encuentro esa partida: revisa el código y que tu rival la tenga abierta.':'No hay conexión a internet. La partida en red necesita internet.'));
+  }catch(e){fail('No hay conexión a internet. La partida en red necesita internet.')}
+}
+$('#mk').onclick=()=>{snd.ui();ncreate()};
+$('#join').onclick=()=>{snd.ui();njoin($('#code').value)};
+$('#code').onkeydown=e=>{if(e.key=='Enter')$('#join').click()};
+$('#nback').onclick=()=>{snd.ui();nleave();$('#net').hidden=true;$('#menu').hidden=false};
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+{const h=location.hash.slice(1);if(/^[A-Za-z0-9]{4}$/.test(h)){$('#menu').hidden=true;$('#net').hidden=false;$('#code').value=h.toUpperCase();njoin(h)}}
 apply();menu();
 </script></body></html>
