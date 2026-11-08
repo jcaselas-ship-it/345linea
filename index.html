@@ -21,7 +21,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 .ib{width:42px;height:42px;border-radius:50%;border:1px solid var(--ln);background:var(--card);font-size:1.15rem;padding:0}
 main{max-width:640px;margin:0 auto;padding:0 16px 24px}
-.grp{margin:0 0 18px}.grp h2{font-size:.95rem;margin:0 0 8px;color:var(--mut);font-weight:600}
+.grp{margin:0 0 18px}.grp h2{font-size:.95rem;margin:0 0 8px;color:var(--mut);font-weight:600;text-align:center}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
 .seg button{flex:1 1 30%;min-height:52px;padding:6px 10px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-weight:600}
 .seg button small{display:block;font-weight:400;color:var(--mut)}
@@ -30,12 +30,12 @@ main{max-width:640px;margin:0 auto;padding:0 16px 24px}
 .sub{margin:0 0 10px}
 .sub>span{display:block;font-size:.85rem;font-weight:700;margin:0 0 5px 2px}
 .sub .seg button{flex:1 1 0;min-height:48px}
-.grp .note{font-size:.8rem;color:var(--mut);margin:6px 2px 0}
-.seg .fx{flex:1 1 0;font-size:1rem}.seg .fx svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:14;stroke-linecap:round;display:block;margin:0 auto 2px}
+.grp .note{font-size:.8rem;color:var(--mut);margin:6px 2px 0;text-align:center}
+.seg .fx{flex:1 1 0;font-size:1rem}.seg .fx svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:14;stroke-linecap:round;display:block;margin:0 auto 2px}
 .seg.tbs{flex-wrap:nowrap}.tbs button{flex:1 1 0;min-width:0;min-height:0;padding:6px}
 .pv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));aspect-ratio:1;width:100%;max-width:58px;margin:0 auto;border-radius:6px;overflow:hidden;gap:2px}
 .pv i{min-width:0;min-height:0;overflow:hidden;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:.68rem;line-height:1}
-.pv-neon{background:#080a18;padding:2px}.pv-neon i{background:#12162e;border-radius:2px}.pv-neon .x{color:#ff4df0}.pv-neon .o{color:#22f0ff}
+.pv-neon{background:#080a18;padding:3px;border:2px solid #7c3cff;box-shadow:0 0 6px #7c3cff99}.pv-neon i{background:#171d3d;border-radius:2px;box-shadow:inset 0 0 0 1px #22d3eecc}.pv-neon .x{color:#ff4df0}.pv-neon .o{color:#22f0ff}
 .pv-chess{gap:0}.pv-chess i{background:#eeeed2}.pv-chess i.d{background:#769656}.pv-chess .x{color:#8a1c1c}.pv-chess .o{color:#12307a}
 .pv-paper{background:#7ea6d6;gap:1px;border:1px solid #7ea6d6}.pv-paper i{background:#fbfbf4}.pv-paper .x{color:#c62828}.pv-paper .o{color:#1a47b8}
 .pv-wood{background:#6b4220;padding:2px}.pv-wood i{background:#d9a566;border-radius:2px}.pv-wood .x{color:#4a1d0b}.pv-wood .o{color:#fff4dc}
@@ -52,8 +52,8 @@ main{max-width:640px;margin:0 auto;padding:0 16px 24px}
 @keyframes dr{from{stroke-dashoffset:100}}
 .x{color:var(--x)}.o{color:var(--o)}
 .c:focus-visible{outline:3px solid var(--ac);outline-offset:-3px}
-[data-t=neon]{background:#080a18;padding:6px;border-radius:14px;gap:4px;box-shadow:0 0 24px #7c3cff66}
-[data-t=neon] .c{background:#12162e;border-radius:8px;box-shadow:inset 0 0 0 1px #22d3ee44}
+[data-t=neon]{background:#080a18;padding:6px;border-radius:14px;gap:4px;border:2px solid #7c3cff;box-shadow:0 0 18px #7c3cff88,inset 0 0 12px #7c3cff44}
+[data-t=neon] .c{background:#171d3d;border-radius:8px;box-shadow:inset 0 0 0 1.5px #22d3eebb,0 0 6px #22d3ee33}
 [data-t=neon] .x{color:#ff4df0}[data-t=neon] .o{color:#22f0ff}
 [data-t=neon] svg{filter:drop-shadow(0 0 5px currentColor)}
 [data-t=chess]{border-radius:8px;overflow:hidden;box-shadow:0 4px 14px #0004}
@@ -76,6 +76,17 @@ main{max-width:640px;margin:0 auto;padding:0 16px 24px}
 #nbig{font-size:clamp(3rem,16vw,4.5rem);font-weight:800;letter-spacing:.12em;color:var(--ac);margin:14px 0 4px;min-height:0}
 #nst{min-height:1.4em;font-weight:600;overflow-wrap:anywhere}
 .row input+button{flex:0 0 auto;padding:0 18px}
+#go{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:2;box-shadow:0 6px 18px #0003}
+@media(max-width:420px){main{padding:0 8px 16px}}
+@media(max-height:700px) and (orientation:portrait){.grp{margin-bottom:12px}.seg button{min-height:46px}header{padding:6px 12px}}
+@media(orientation:landscape) and (max-height:520px){
+ header{padding:3px 12px;max-width:none}h1{font-size:1.15rem}.ib{width:34px;height:34px;font-size:.95rem}
+ main{max-width:none;padding:0 12px 8px}
+ #game:not([hidden]){display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 20px;align-items:center;justify-content:center}
+ #b{width:calc(100dvh - 52px);grid-column:1;grid-row:1/span 3;margin:0}
+ #score,#st,#game .row{grid-column:2;max-width:420px;width:100%}
+ #st{margin:10px 0}#game .row{margin-top:4px}
+ #net{max-width:560px;margin:0 auto}}
 @media(prefers-reduced-motion:reduce){.c svg{animation:none}}
 </style></head><body>
 <header><h1>3-4-5 en Raya</h1><div class="hb"><button class="ib" id="snd" aria-label="Activar o desactivar el sonido"></button><button class="ib" id="thm" aria-label="Cambiar entre modo claro y oscuro"></button></div></header>
@@ -109,13 +120,13 @@ const MODES=[[3,'3 en raya','3×3'],[4,'4 en raya','6×6'],[5,'5 en raya','9×9'
 BRD=[['neon','Neón'],['chess','Ajedrez'],['paper','Libreta'],['wood','Madera']];
 const one=()=>S.opp=='e'||S.opp=='d';
 const bt=(k,v,inner,cls='',lab='')=>`<button data-k="${k}" data-v="${v}" aria-pressed="${k=='pl'?(v=='1')==one():S[k]==v}"${cls?` class="${cls}"`:''}${lab?` aria-label="${lab}" title="${lab}"`:''}>${inner}</button>`;
-const mini=t=>`<div class="pv pv-${t}" aria-hidden="true">${['x','o','','','x','o','o','','x'].map((v,i)=>`<i class="${v}${i%2?' d':''}">${v=='x'?'✕':v=='o'?'○':''}</i>`).join('')}</div>`;
+const mini=t=>`<div class="pv pv-${t}" aria-hidden="true">${[...Array(9)].map((_,i)=>`<i${i%2?' class="d"':''}></i>`).join('')}</div>`;
 function menu(){$('#opts').innerHTML=
  `<div class="grp"><h2>Modo</h2><div class="seg">${MODES.map(([v,l,s])=>bt('mode',v,`${l}<small>${s}</small>`)).join('')}</div></div>`+
- `<div class="grp"><h2>Jugadores</h2><div class="seg">${bt('pl','1','👤 1 jugador<small>contra la IA</small>')}${bt('pl','2','👥 2 jugadores<small>contra un amigo</small>')}</div></div>`+
+ `<div class="grp"><h2>Jugadores</h2><div class="seg">${bt('pl','1','👤 1 jugador & IA')}${bt('pl','2','👥 2 jugadores')}</div></div>`+
  (one()?`<div class="grp"><h2>Dificultad</h2><div class="seg">${bt('opp','e','Fácil')}${bt('opp','d','Difícil')}</div></div>`
        :`<div class="grp"><h2>Dónde</h2><div class="seg">${bt('opp','h','📱 Mismo dispositivo')}${bt('opp','n','📡 Online')}</div></div>`)+
- `<div class="grp"><h2>Tu ficha</h2><div class="seg">${[['X','Empiezas tú'],['O','Empieza el rival']].map(([v,l])=>bt('me',v,`${ico(v)}<small>${l}</small>`,'fx '+v.toLowerCase(),'Ficha '+v)).join('')}</div><p class="note">La ✕ empieza la primera partida; después se alterna quién empieza.</p></div>`+
+ `<div class="grp"><h2>Tu ficha</h2><div class="seg">${['X','O'].map(v=>bt('me',v,ico(v),'fx '+v.toLowerCase(),'Ficha '+v)).join('')}</div><p class="note">La ✕ empieza; después se alterna.</p></div>`+
  `<div class="grp"><h2>Tablero</h2><div class="seg tbs">${BRD.map(([v,l])=>bt('board',v,mini(v),'',l)).join('')}</div></div>`}
 const apply=()=>{document.documentElement.dataset.theme=S.dark?'dark':'light';$('#thm').textContent=S.dark?'☀️':'🌙';$('#snd').textContent=S.sound?'🔊':'🔇'};
 $('#opts').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k,v=b.dataset.v;
